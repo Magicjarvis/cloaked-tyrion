@@ -1,7 +1,33 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class BinarySearchTree<T extends Comparable<? super T>> implements SearchTree<T> {
+public class BinarySearchTree<T extends Comparable<? super T>> {
+  private class Node<T> {
+    Node<T> left;
+    Node<T> right;
+    T key;
+    public Node(T item) {
+      key = item; 
+    }
+    public void setKey(T key) {
+      this.key = key;
+    }
+    public void setRight(Node<T> right) {
+      this.right = right;
+    }
+    public void setLeft(Node<T> left) {
+      this.left = left;
+    }
+    public T getKey() {
+      return key; 
+    }
+    public Node<T> getRight() {
+      return right; 
+    }
+    public Node<T> getLeft() {
+      return left; 
+    }
+  };
   private Node<T> root;
   private int size;
 
@@ -9,13 +35,12 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     root = null; 
     size = 0;
   }
-  @Override
-  public void add(T item) {
+    public void add(T item) {
     root = add(root, item);
   }
 
   private Node<T> add(Node<T> curr, T item) {
-    if (curr == null) { size++; return new Node(item);}
+    if (curr == null) { size++; return new Node<T>(item);}
     if (item.compareTo(curr.getKey()) > 0) {
       curr.setRight(add(curr.getRight(), item)); 
     } else if (item.compareTo(curr.getKey()) < 0) {
@@ -25,14 +50,12 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
   }
 
 
-  @Override
-  public void clear() {
+    public void clear() {
     root = null;
     size = 0;
   }
 
-  @Override
-  public boolean contains(T item) {
+    public boolean contains(T item) {
     return contains(root, item);
   }
 
@@ -56,18 +79,15 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     printRootToLeaf(curr.getRight(), str+curr.toString() + "->");
   }
 
-  @Override
-  public boolean isEmpty() {
+    public boolean isEmpty() {
     return size == 0;
   }
 
-  @Override
-  public int size() {
+    public int size() {
     return size;
   }
 
-  @Override
-  public T getMax() {
+    public T getMax() {
     return getMax(root);
   }
 
@@ -78,8 +98,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     return getMax(curr.getRight());
   }
 
-  @Override
-  public T getMin() {
+    public T getMin() {
     return getMin(root);
   }
   private T getMin(Node<T> curr) {
@@ -89,8 +108,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     return getMin(curr.getLeft());
   }
 
-  @Override
-  public List<T> postOrder() {
+    public List<T> postOrder() {
     return postOrder(new ArrayList<T>(), root);
   }
 
@@ -101,8 +119,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     return list;
   }
 
-  @Override
-  public List<T> preOrder() {
+    public List<T> preOrder() {
     return preOrder(new ArrayList<T>(), root);
   }
 
@@ -113,7 +130,6 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     return preOrder(list, curr.getRight());
   }
 
-  @Override
   public List<T> inOrder() {
     return inOrder(new ArrayList<T>(), root);
   }
@@ -124,4 +140,38 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Search
     list.add(curr.getKey());
     return inOrder(list, curr.getRight());
   }
+
+  public void restrictRange(T min, T max) {
+    root = restrictRange(root, min, max);
+  }
+  private Node<T> restrictRange(Node<T> curr, T min, T max) {
+    if (curr == null) return curr; 
+
+    if (curr.key.compareTo(min) < 0) {
+      return restrictRange(curr.right, min, max); 
+    }
+    if (curr.key.compareTo(max) > 0) {
+      return restrictRange(curr.left, min, max); 
+    }
+
+    curr.left = restrictRange(curr.left, min, max);
+    curr.right = restrictRange(curr.right, min, max);
+
+    return curr;
+
+  }
+  public static void main(String[] args) {
+    BinarySearchTree<Integer> bst = new BinarySearchTree<Integer>(); 
+    bst.add(10);
+    bst.add(8);
+    bst.add(14);
+    bst.add(7);
+    bst.add(9);
+    bst.add(16);
+
+    bst.restrictRange(7, 16);
+
+    System.out.println(bst.preOrder());
+  }
+  
 }
